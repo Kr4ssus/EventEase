@@ -1,48 +1,35 @@
 # EventEase
 
-EventEase is a Blazor WebAssembly event browser and registration app.
+EventEase is a Blazor WebAssembly app for browsing events, registering for events, and tracking attendance.
 
-## GitHub Pages Deployment
+## Copilot-assisted development summary
 
-This repository is configured for GitHub Pages as a repo site at `https://<username>.github.io/EventEase/`.
+This README summarizes how Microsoft Copilot helped through the three original stages of the EventEase project.
 
-### What was changed
+### Activity 1: Foundation and routing
 
-- Updated `EventEase/wwwroot/index.html` to use `<base href="/EventEase/" />`.
-- Added a GitHub Actions workflow at `.github/workflows/gh-pages.yml`.
-- The workflow builds the app and publishes the output to the `gh-pages` branch.
+- Copilot helped scaffold the first Blazor components, including the reusable `EventCard` component.
+- It suggested the component structure and the properties needed for event name, date, and location.
+- Copilot assisted with data binding syntax so event details rendered dynamically from a simple model.
+- It helped establish the initial routing between the event list, event details, and registration pages.
+- The result was a working foundation with component-based UI and basic page navigation.
 
-### How to use it
+### Activity 2: Debugging and optimization
 
-1. Push your changes to `main`.
-2. GitHub Actions will build and deploy the site automatically.
-3. Configure GitHub Pages in repository settings, if needed:
-   - Source: `gh-pages` branch
-   - Folder: `/`
+- Copilot guided the debugging of data binding and validation issues in the event card.
+- It suggested fixes for routing edge cases and invalid paths to improve navigation reliability.
+- Copilot also helped identify performance issues in the event list rendering.
+- By applying those suggestions, the app became more stable and responsive with larger event sets.
 
-## Copilot assistance summary
+### Activity 3: Advanced features and deployment readiness
 
-### Stage 1: Event card UI and routing
+- Copilot assisted with adding user session state and login/register validation.
+- It helped implement an attendance tracker and event registration flow.
+- Copilot suggested best practices for session protection, logout behavior, and user-specific views.
+- It also helped prepare the app for GitHub Pages hosting by confirming the correct static deployment path.
 
-- Created the reusable `EventCard` component.
-- Built the event list page so events render in a responsive card grid.
-- Added route structure and navigation to move between event views.
-- Helped design card-based behavior and improve the event browsing UX.
+## Current state
 
-### Stage 2: Upgrade to .NET 8
-
-- Verified the project targets `.NET 8` in `EventEase.csproj`.
-- Ensured the app built cleanly with the new framework.
-- Addressed compatibility updates required for the Blazor WebAssembly app.
-
-### Stage 3: Login/register flow and session protection
-
-- Implemented `UserSessionService` and authentication state handling.
-- Built the login/register UI with validation.
-- Added protected navigation and route checks so only logged-in users can access events.
-- Added direct event registration and session logout behavior.
-
-## Notes
-
-- The app is a static Blazor WebAssembly site and runs entirely in the browser.
-- The GitHub Actions workflow publishes the static build output automatically.
+- The app supports event browsing, registration, and protected navigation.
+- User login state is tracked and cleared on logout.
+- Event registration is handled directly from the event cards.
