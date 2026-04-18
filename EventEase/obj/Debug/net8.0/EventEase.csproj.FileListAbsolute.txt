@@ -1030,6 +1030,7 @@ C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\zd14m603d
 C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\ypl0frfle6-{0}-doe49djxnh-doe49djxnh.gz
 C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\g0zbia4pil-{0}-alichmvdn0-alichmvdn0.gz
 C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\a0jejrqjyk-{0}-3hlldfcq3h-3hlldfcq3h.gz
-C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\w0lsswlmgp-{0}-78m2nfdilx-78m2nfdilx.gz
-C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\tnq3z2k0z4-{0}-zg0nh5u9nx-zg0nh5u9nx.gz
-C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\pqrel3z3dc-{0}-h2ec7k6qni-h2ec7k6qni.gz
+C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\EventEase.sourcelink.json
+C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\w0lsswlmgp-{0}-i591wnl2fs-i591wnl2fs.gz
+C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\tnq3z2k0z4-{0}-1ixq5ibk13-1ixq5ibk13.gz
+C:\Users\Tom\Workspace\EventEase\EventEase\obj\Debug\net8.0\compressed\pqrel3z3dc-{0}-rbujlq72nb-rbujlq72nb.gz
