@@ -1,0 +1,2 @@
+C:\Users\Tom\Workspace\EventEase\EventEase\publish\emcc-props.json
+C:\Users\Tom\Workspace\EventEase\EventEase\publish\web.config

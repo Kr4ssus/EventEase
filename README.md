@@ -1,7 +1,6 @@
 # EventEase
 
 EventEase is a Blazor WebAssembly app for browsing events, registering for events, and tracking attendance.
-
 ## Copilot-assisted development summary
 
 This README summarizes how Microsoft Copilot helped through the three original stages of the EventEase project.
