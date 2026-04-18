@@ -1,0 +1,46 @@
+@page "/events"
+@using EventEase.Models
+
+@inject EventStore EventStore
+@inject UserSessionService UserSession
+@inject AttendanceTrackerService AttendanceTracker
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event List</PageTitle>
+
+<h1>Upcoming Events</h1>
+
+<div class="event-list">
+    @foreach (var eventItem in Events)
+    {
+        <div class="event-card-wrapper" @key="eventItem.Id">
+            <EventCard Event="eventItem" OnRegistrationChanged="RefreshList" />
+            @if (IsRegistered(eventItem.Id))
+            {
+                <span class="registered-badge">Registered</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<EventModel> Events => EventStore.Events;
+
+    protected override void OnInitialized()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private bool IsRegistered(int eventId)
+    {
+        return UserSession.CurrentUser is not null && AttendanceTracker.IsUserRegistered(eventId, UserSession.CurrentUser.Email);
+    }
+
+    private void RefreshList()
+    {
+        StateHasChanged();
+    }
+}

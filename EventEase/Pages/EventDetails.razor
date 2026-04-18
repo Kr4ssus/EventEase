@@ -1,0 +1,81 @@
+@using EventEase.Models
+@inject EventStore EventStore
+@inject UserSessionService UserSession
+@inject AttendanceTrackerService AttendanceTracker
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event Details</PageTitle>
+
+<h1>Event details</h1>
+
+@if (SelectedEvent is null)
+{
+    <p>Event not found.</p>
+    <NavLink href="/events">Back to event list</NavLink>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(ToastMessage))
+    {
+        <div class="toast">@ToastMessage</div>
+    }
+
+    <EventCard Event="SelectedEvent" />
+
+    @if (UserSession.CurrentUser is not null)
+    {
+        @if (IsRegistered)
+        {
+            <button class="btn" disabled>Registered</button>
+        }
+        else
+        {
+            <button class="btn" @onclick="RegisterForEvent">Register for this event</button>
+        }
+
+        <NavLink href="@($"/attendance/{EventId}")">View attendance</NavLink>
+    }
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private EventModel? SelectedEvent { get; set; }
+    private bool IsRegistered { get; set; }
+    private string? ToastMessage;
+
+    protected override void OnParametersSet()
+    {
+        SelectedEvent = EventStore.GetEvent(EventId);
+        IsRegistered = UserSession.CurrentUser is not null && AttendanceTracker.IsUserRegistered(EventId, UserSession.CurrentUser.Email);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private void RegisterForEvent()
+    {
+        if (SelectedEvent is null || UserSession.CurrentUser is null)
+        {
+            return;
+        }
+
+        var registration = new RegistrationModel
+        {
+            EventId = SelectedEvent.Id,
+            EventName = SelectedEvent.Name,
+            Email = UserSession.CurrentUser.Email,
+            AttendeeEmail = UserSession.CurrentUser.Email
+        };
+
+        AttendanceTracker.RegisterForEvent(registration);
+        IsRegistered = true;
+        ToastMessage = "You are registered for this event.";
+    }
+}

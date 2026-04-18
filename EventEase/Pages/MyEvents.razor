@@ -1,0 +1,56 @@
+@page "/my-events"
+@using EventEase.Models
+
+@inject EventStore EventStore
+@inject AttendanceTrackerService AttendanceTracker
+@inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
+
+<PageTitle>My Events</PageTitle>
+
+@if (UserSession.CurrentUser is null)
+{
+    <p>Please log in to view your events.</p>
+    <NavLink href="/">Login</NavLink>
+}
+else
+{
+    <h1>My Registered Events</h1>
+
+    @if (!RegisteredEvents.Any())
+    {
+        <p>You are not registered for any events yet.</p>
+    }
+    else
+    {
+        <div class="event-list">
+            @foreach (var eventItem in RegisteredEvents)
+            {
+                <div class="event-card-wrapper">
+                    <EventCard Event="eventItem" />
+                    <span class="registered-badge">Registered</span>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private IEnumerable<EventModel> RegisteredEvents { get; set; } = Enumerable.Empty<EventModel>();
+
+    protected override void OnInitialized()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var registrations = AttendanceTracker.GetRegistrationsForUser(UserSession.CurrentUser.Email).ToList();
+        RegisteredEvents = registrations
+            .Select(r => EventStore.GetEvent(r.EventId))
+            .Where(evt => evt is not null)
+            .Select(evt => evt!)
+            .ToList();
+    }
+}

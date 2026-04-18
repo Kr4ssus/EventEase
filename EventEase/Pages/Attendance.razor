@@ -1,0 +1,53 @@
+@inject EventStore EventStore
+@inject AttendanceTrackerService AttendanceTracker
+@inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event Attendance</PageTitle>
+
+<h1>Attendance for @SelectedEvent?.Name</h1>
+
+@if (SelectedEvent is null)
+{
+    <p>Event not found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var registration in Registrations)
+        {
+            <li>@registration.AttendeeEmail</li>
+        }
+    </ul>
+    @if (!Registrations.Any())
+    {
+        <p>No registrations yet.</p>
+    }
+}
+
+<NavLink href="/events">Back to events</NavLink>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private EventModel? SelectedEvent { get; set; }
+    private IEnumerable<RegistrationModel> Registrations { get; set; } = Array.Empty<RegistrationModel>();
+
+    protected override void OnParametersSet()
+    {
+        SelectedEvent = EventStore.GetEvent(EventId);
+        if (SelectedEvent is not null)
+        {
+            Registrations = AttendanceTracker.GetRegistrationsForEvent(EventId);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

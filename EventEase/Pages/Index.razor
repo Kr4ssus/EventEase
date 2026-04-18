@@ -1,0 +1,129 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+
+@inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
+
+<PageTitle>EventEase</PageTitle>
+
+@if (UserSession.CurrentUser is not null)
+{
+    <p>You are already logged in as @UserSession.CurrentUser.Email.</p>
+    <NavLink href="/events">Go to events</NavLink>
+}
+else
+{
+    <div class="auth-container">
+        <div class="auth-tabs">
+            <button class="@(IsLoginMode ? "active" : "")" @onclick="() => IsLoginMode = true">Login</button>
+            <button class="@(!IsLoginMode ? "active" : "")" @onclick="() => IsLoginMode = false">Register</button>
+        </div>
+
+        @if (IsLoginMode)
+        {
+            <div class="auth-form">
+                <h1>Login to EventEase</h1>
+                <div>
+                    <label>Email</label>
+                    <input @bind="LoginEmail" class="event-input" type="email" />
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input @bind="LoginPassword" class="event-input" type="password" />
+                </div>
+                <button class="btn" @onclick="PerformLogin">Login</button>
+                @if (!string.IsNullOrEmpty(LoginError))
+                {
+                    <p class="error">@LoginError</p>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="auth-form">
+                <h1>Register for EventEase</h1>
+                <div>
+                    <label>Email</label>
+                    <input @bind="RegisterEmail" class="event-input" type="email" />
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input @bind="RegisterPassword" class="event-input" type="password" />
+                </div>
+                <button class="btn" @onclick="PerformRegister">Register</button>
+                @if (!string.IsNullOrEmpty(RegisterError))
+                {
+                    <p class="error">@RegisterError</p>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool IsLoginMode { get; set; } = true;
+
+    private string LoginEmail { get; set; } = "";
+    private string LoginPassword { get; set; } = "";
+    private string LoginError { get; set; } = "";
+
+    private string RegisterEmail { get; set; } = "";
+    private string RegisterPassword { get; set; } = "";
+    private string RegisterError { get; set; } = "";
+
+    private void PerformLogin()
+    {
+        LoginError = "";
+        if (string.IsNullOrWhiteSpace(LoginEmail) || string.IsNullOrWhiteSpace(LoginPassword))
+        {
+            LoginError = "Please enter both email and password.";
+            return;
+        }
+
+        if (!IsValidEmail(LoginEmail))
+        {
+            LoginError = "Please enter a valid email address.";
+            return;
+        }
+
+        if (UserSession.Login(LoginEmail, LoginPassword))
+        {
+            NavigationManager.NavigateTo("/events");
+        }
+        else
+        {
+            LoginError = "Invalid credentials. Please check your email and password.";
+        }
+    }
+
+    private void PerformRegister()
+    {
+        RegisterError = "";
+        if (string.IsNullOrWhiteSpace(RegisterEmail) || string.IsNullOrWhiteSpace(RegisterPassword))
+        {
+            RegisterError = "Please enter both email and password.";
+            return;
+        }
+
+        if (!IsValidEmail(RegisterEmail))
+        {
+            RegisterError = "Please enter a valid email address.";
+            return;
+        }
+
+        if (RegisterPassword.Length < 6)
+        {
+            RegisterError = "Password must be at least 6 characters.";
+            return;
+        }
+
+        var user = new UserModel { Email = RegisterEmail, Password = RegisterPassword };
+        UserSession.Register(user);
+        NavigationManager.NavigateTo("/events");
+    }
+
+    private static bool IsValidEmail(string email)
+    {
+        return new EmailAddressAttribute().IsValid(email);
+    }
+}

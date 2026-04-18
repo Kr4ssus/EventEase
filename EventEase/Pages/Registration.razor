@@ -1,0 +1,91 @@
+@page "/register/{EventId:int}"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+@inject EventStore EventStore
+@inject UserSessionService UserSession
+@inject AttendanceTrackerService AttendanceTracker
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register for Event</PageTitle>
+
+<h1>Register for @SelectedEvent?.Name</h1>
+
+@if (SelectedEvent is null)
+{
+    <p>Event not found.</p>
+    <NavLink href="/events">Back to events</NavLink>
+}
+else if (UserSession.CurrentUser is null)
+{
+    <p>Please log in to register.</p>
+    <NavLink href="/">Go to login</NavLink>
+}
+else if (IsAlreadyRegistered)
+{
+    <p>You are already registered for this event.</p>
+    <NavLink href="/events">Back to events</NavLink>
+}
+else
+{
+    <EditForm Model="RegistrationData" OnValidSubmit="SubmitRegistration">
+        <DataAnnotationsValidator />
+        <div>
+            <label>Event name</label>
+            <InputText @bind-Value="RegistrationData.EventName" readonly class="event-input" />
+        </div>
+        <div>
+            <label>Your email</label>
+            <InputText @bind-Value="RegistrationData.AttendeeEmail" class="event-input" />
+        </div>
+        <div>
+            <label>Email</label>
+            <InputText @bind-Value="RegistrationData.Email" class="event-input" />
+        </div>
+        <button class="btn" type="submit">Submit registration</button>
+    </EditForm>
+
+    @if (ConfirmationMessage is not null)
+    {
+        <p class="confirmation">@ConfirmationMessage</p>
+    }
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private EventModel? SelectedEvent { get; set; }
+    private RegistrationModel RegistrationData { get; set; } = new();
+    private string? ConfirmationMessage;
+    private bool IsAlreadyRegistered => AttendanceTracker.IsUserRegistered(EventId, UserSession.CurrentUser?.Email ?? "");
+
+    protected override void OnParametersSet()
+    {
+        SelectedEvent = EventStore.GetEvent(EventId);
+        if (SelectedEvent is not null)
+        {
+            RegistrationData = new RegistrationModel
+            {
+                EventId = SelectedEvent.Id,
+                EventName = SelectedEvent.Name,
+                AttendeeEmail = UserSession.CurrentUser?.Email ?? "",
+                Email = UserSession.CurrentUser?.Email ?? ""
+            };
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private void SubmitRegistration()
+    {
+        AttendanceTracker.RegisterForEvent(RegistrationData);
+        ConfirmationMessage = $"Thanks, {RegistrationData.AttendeeEmail}. Registration for \"{RegistrationData.EventName}\" is recorded.";
+    }
+}

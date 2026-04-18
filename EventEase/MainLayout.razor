@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
+
+@if (UserSession.CurrentUser is not null)
+{
+    <header class="top-nav">
+        <nav>
+            <NavLink href="/events">Events</NavLink>
+            <NavLink href="/my-events">My Events</NavLink>
+            <span>Welcome, @UserSession.CurrentUser.Email</span>
+            <button class="btn" @onclick="Logout">Logout</button>
+        </nav>
+    </header>
+}
+
+<main>
+    @Body
+</main>
+
+@code {
+    private void Logout()
+    {
+        UserSession.Logout();
+        NavigationManager.NavigateTo("/");
+    }
+}

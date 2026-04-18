@@ -1,0 +1,96 @@
+@using EventEase.Models
+@inject UserSessionService UserSession
+@inject AttendanceTrackerService AttendanceTracker
+
+<div class="event-card">
+    <h3>@Event.Name</h3>
+    <p><strong>Date:</strong> @(Event.Date?.ToString("MMMM d, yyyy") ?? "No date")</p>
+    <p><strong>Location:</strong> @Event.Location</p>
+
+    @if (UserSession.CurrentUser is not null)
+    {
+        <div class="event-actions">
+            @if (IsRegistered)
+            {
+                <button class="btn btn-secondary" disabled>Registered</button>
+            }
+            else
+            {
+                <button class="btn" @onclick="RegisterForEvent">Register</button>
+            }
+
+            <button class="btn btn-secondary" @onclick="ShowAttendance">View attendance</button>
+        </div>
+    }
+    else
+    {
+        <p class="muted">Log in to register and see attendance.</p>
+    }
+</div>
+
+@if (ShowAttendanceModal)
+{
+    <div class="modal-overlay" @onclick="CloseAttendanceModal">
+        <div class="modal-window" @onclick:stopPropagation>
+            <h3>Attendance for @Event.Name</h3>
+            @if (Registrations.Any())
+            {
+                <ul>
+                    @foreach (var registration in Registrations)
+                    {
+                        <li>@registration.AttendeeEmail</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No registrations yet.</p>
+            }
+            <button class="btn" @onclick="CloseAttendanceModal">Close</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventModel Event { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnRegistrationChanged { get; set; }
+
+    private bool ShowAttendanceModal { get; set; }
+
+    private IEnumerable<RegistrationModel> Registrations { get; set; } = Array.Empty<RegistrationModel>();
+
+    private bool IsRegistered => UserSession.CurrentUser is not null && AttendanceTracker.IsUserRegistered(Event.Id, UserSession.CurrentUser.Email);
+
+    private void RegisterForEvent()
+    {
+        if (UserSession.CurrentUser is null)
+        {
+            return;
+        }
+
+        var registration = new RegistrationModel
+        {
+            EventId = Event.Id,
+            EventName = Event.Name,
+            Email = UserSession.CurrentUser.Email,
+            AttendeeEmail = UserSession.CurrentUser.Email
+        };
+
+        AttendanceTracker.RegisterForEvent(registration);
+        OnRegistrationChanged.InvokeAsync();
+    }
+
+    private void ShowAttendance()
+    {
+        Registrations = AttendanceTracker.GetRegistrationsForEvent(Event.Id);
+        ShowAttendanceModal = true;
+    }
+
+    private void CloseAttendanceModal()
+    {
+        ShowAttendanceModal = false;
+    }
+}
