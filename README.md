@@ -4,7 +4,7 @@ EventEase is a Blazor WebAssembly event browser and registration app.
 
 ## GitHub Pages Deployment
 
-This repository is configured for GitHub Pages as a repo site at `https://<username>.github.io/EventEase/`.
+This repository is configured for GitHub Pages as a repo site at `https://kr4ssus.github.io/EventEase/`.
 
 ### What was changed
 
